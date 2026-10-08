@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Updates · The Minions Project</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      .updates { max-width: 860px; margin: 40px auto; padding: 0 20px; }
+      .update-card {
+        background: rgba(255, 255, 255, 0.8);
+        border: 2px solid rgba(29, 99, 210, 0.08);
+        border-radius: 20px;
+        padding: 18px 22px;
+        margin-bottom: 16px;
+        box-shadow: 0 10px 25px rgba(29, 35, 51, 0.06);
+      }
+      .update-card h2 { margin: 0 0 6px; font-family: "Baloo 2", cursive; color: #123e9b; font-size: 1.5rem; }
+      .update-meta { font-size: 0.85rem; color: rgba(29, 35, 51, 0.65); }
+      .update-card ul { margin: 6px 0; padding-left: 20px; font-family: ui-monospace, monospace; font-size: 0.85rem; }
+      .added { color: #15803d; }
+      .changed { color: #b45309; }
+      .removed { color: #b91c1c; }
+      .empty { color: rgba(29, 35, 51, 0.7); }
+    </style>
+  </head>
+  <body>
+    <main class="updates">
+      <p class="eyebrow"><a href="/">← Back to home</a></p>
+      <h1 style="font-family: 'Baloo 2', cursive; color: #123e9b">Updates</h1>
+      <div id="list"></div>
+    </main>
+
+    <script>
+      const list = document.getElementById("list");
+      const CAP = 20;
+      let loadedMax = null;
+
+      function fileList(label, cls, files) {
+        if (!files.length) return null;
+        const wrap = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = label;
+        const ul = document.createElement("ul");
+        files.slice(0, CAP).forEach((f) => {
+          const li = document.createElement("li");
+          li.className = cls;
+          li.textContent = f;
+          ul.appendChild(li);
+        });
+        if (files.length > CAP) {
+          const li = document.createElement("li");
+          li.textContent = `+${files.length - CAP} more`;
+          ul.appendChild(li);
+        }
+        wrap.append(title, ul);
+        return wrap;
+      }
+
+      function renderCard(a) {
+        const card = document.createElement("article");
+        card.className = "update-card";
+
+        const h2 = document.createElement("h2");
+        h2.textContent = a.message;
+
+        const meta = document.createElement("div");
+        meta.className = "update-meta";
+        meta.textContent = `${a.author} · ${new Date(a.created_at).toLocaleString()} · ${a.sha.slice(0, 7)}`;
+
+        card.append(h2, meta);
+        const sections = [
+          fileList("Added", "added", a.changes.added || []),
+          fileList("Changed", "changed", a.changes.modified || []),
+          fileList("Removed", "removed", a.changes.removed || []),
+        ];
+        sections.forEach((s) => s && card.appendChild(s));
+        return card;
+      }
+
+      async function loadList() {
+        const res = await fetch("/api/announcements", { cache: "no-store" });
+        const rows = await res.json();
+        list.replaceChildren();
+        if (!rows.length) {
+          const p = document.createElement("p");
+          p.className = "empty";
+          p.textContent = "No updates yet.";
+          list.appendChild(p);
+        }
+        rows.forEach((a) => list.appendChild(renderCard(a)));
+        return rows.length ? rows[0].id : 0;
+      }
+
+      async function checkLatest() {
+        try {
+          const res = await fetch("/api/announcements/latest", { cache: "no-store" });
+          const { max } = await res.json();
+          if (loadedMax !== null && max > loadedMax) location.reload();
+        } catch {}
+      }
+
+      (async () => {
+        loadedMax = await loadList();
+        setInterval(checkLatest, 5000);
+      })();
+    </script>
+  </body>
+</html>
+
