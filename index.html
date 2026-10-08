@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Minions Project</title>
+    <meta
+      name="description"
+      content="The Minions Project — a cheerful, playful landing page inspired by banana-powered fun."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">M</span>
+          <span>The Minions Project</span>
+        </div>
+        <nav class="nav">
+          <a href="#about">About</a>
+          <a href="#features">Features</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Banana-powered creativity</p>
+            <h1>Build something fun, bold, and unforgettable.</h1>
+            <p class="lead">
+              The Minions Project brings together playful energy, smart ideas, and a whole lot of
+              enthusiasm for making cool experiences that people love.
+            </p>
+            <div class="cta-row">
+              <a class="button primary" href="#features">Explore</a>
+              <a class="button secondary" href="#contact">Join the fun</a>
+            </div>
+          </div>
+
+          <div class="profile-card" aria-label="King Bob profile card">
+            <div class="photo-wrap">
+              <img
+                src="./king_bob.jpeg"
+                alt="King Bob"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="profile-fallback">KB</div>
+            </div>
+            <div class="profile-text">
+              <p class="label">Profile</p>
+              <h2>King Bob</h2>
+              <p>Creative leader • Minion enthusiast • Team banana booster</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="features" class="feature-grid">
+          <article class="feature-card">
+            <div class="icon">🥤</div>
+            <h3>Playful Energy</h3>
+            <p>Every detail is designed to feel bright, energetic, and full of personality.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="icon">🚀</div>
+            <h3>Big Ideas</h3>
+            <p>We turn bold concepts into exciting experiences people can instantly connect with.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="icon">🍌</div>
+            <h3>Team Spirit</h3>
+            <p>Collaboration, humor, and creativity are at the heart of everything we build.</p>
+          </article>
+        </section>
+
+        <section id="about" class="about-panel">
+          <div>
+            <p class="eyebrow">About the project</p>
+            <h2>Mini moments, maximum fun.</h2>
+          </div>
+          <p>
+            The Minions Project is a cheerful concept website built around a bold visual identity,
+            friendly characters, and a simple mission: create joy through design, energy, and teamwork.
+          </p>
+        </section>
+      </main>
+
+      <footer id="contact" class="footer">
+        <p>Contact: hello@minionsproject.dev</p>
+        <p>© <span id="year"></span> The Minions Project</p>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+
