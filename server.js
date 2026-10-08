@@ -1,9 +1,9 @@
 import http from "node:http";
-import { createHmac, timingSafeEqual } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
+import { verifySignature, announcementsFromPush } from "./lib/github.js";
 
 const ROOT = fileURLToPath(new URL(".", import.meta.url));
 const PORT = Number(process.env.PORT) || 3000;
@@ -50,17 +50,9 @@ function sendJson(res, status, data) {
   res.end(JSON.stringify(data));
 }
 
-function validSignature(raw, header) {
-  if (!WEBHOOK_SECRET || !header) return false;
-  const expected = "sha256=" + createHmac("sha256", WEBHOOK_SECRET).update(raw).digest("hex");
-  const a = Buffer.from(expected);
-  const b = Buffer.from(header);
-  return a.length === b.length && timingSafeEqual(a, b);
-}
-
 async function handleGithub(req, res) {
   const raw = await readBody(req);
-  if (!validSignature(raw, req.headers["x-hub-signature-256"])) {
+  if (!verifySignature(WEBHOOK_SECRET, raw, req.headers["x-hub-signature-256"])) {
     res.writeHead(401).end("invalid signature");
     return;
   }
@@ -69,24 +61,16 @@ async function handleGithub(req, res) {
   if (event !== "push") return res.writeHead(202).end("ignored event");
 
   const payload = JSON.parse(raw.toString("utf8"));
-  const defaultRef = `refs/heads/${payload.repository?.default_branch}`;
-  if (payload.ref !== defaultRef) return res.writeHead(202).end("ignored branch");
+  const rows = announcementsFromPush(payload);
+  if (rows === null) return res.writeHead(202).end("ignored branch");
 
-  const repo = payload.repository?.full_name ?? "unknown";
   let stored = 0;
-  for (const c of payload.commits ?? []) {
-    const message = String(c.message ?? "").split("\n")[0];
-    const changes = {
-      added: c.added ?? [],
-      modified: c.modified ?? [],
-      removed: c.removed ?? [],
-    };
-    const author = c.author?.username ?? c.author?.name ?? "unknown";
+  for (const r of rows) {
     const result = await pool.query(
       `INSERT INTO announcements (repo, sha, author, message, changes)
        VALUES ($1, $2, $3, $4, $5)
        ON CONFLICT (sha) DO NOTHING`,
-      [repo, c.id, author, message, JSON.stringify(changes)]
+      [r.repo, r.sha, r.author, r.message, JSON.stringify(r.changes)]
     );
     stored += result.rowCount;
   }
