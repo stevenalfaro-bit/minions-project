@@ -105,6 +105,7 @@ const server = http.createServer(async (req, res) => {
       const { rows } = await pool.query(`SELECT COALESCE(MAX(id), 0)::int AS max FROM announcements`);
       return sendJson(res, 200, { max: rows[0].max });
     }
+    if (req.method === "GET" && url.pathname === "/run") return await serveStatic(req, res, "/run.html");
     if (req.method === "GET") return await serveStatic(req, res, url.pathname);
     res.writeHead(405).end();
   } catch (err) {

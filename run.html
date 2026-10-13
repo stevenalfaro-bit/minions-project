@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minion Run 3D | The Minions Project</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #05070f; font-family: Inter, sans-serif; color: #fff; }
+      #stage { position: fixed; inset: 0; }
+      #stage canvas { display: block; }
+      #hud { position: fixed; top: 16px; left: 16px; padding: 10px 16px; border-radius: 999px; background: rgba(0, 0, 0, 0.45); font-weight: 700; z-index: 2; }
+      #hud span { color: #f9d93d; }
+      #overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(5, 8, 20, 0.5); z-index: 3; cursor: pointer; }
+      #overlay.hidden { display: none; }
+      .msg { background: rgba(255, 255, 255, 0.93); color: #123e9b; border-radius: 20px; padding: 24px 28px; text-align: center; max-width: 460px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35); }
+      .msg h1 { margin: 0 0 10px; font-size: 40px; }
+      .msg p { margin: 0; line-height: 1.5; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <div id="hud">Score <span id="score">0</span> &middot; Best <span id="best">0</span></div>
+    <div id="overlay">
+      <div class="msg">
+        <h1 id="title">Minion Run 3D</h1>
+        <p id="text"></p>
+      </div>
+    </div>
+    <script type="importmap">
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+    </script>
+    <script type="module" src="./run.js"></script>
+  </body>
+</html>
+
