@@ -94,6 +94,7 @@ const server = http.createServer(async (req, res) => {
   try {
     if (req.method === "POST" && url.pathname === "/github") return await handleGithub(req, res);
     if (req.method === "GET" && url.pathname === "/health") return res.writeHead(200).end("ok");
+    if (req.method === "GET" && url.pathname === "/run") return await serveStatic(req, res, "/run.html");
     if (req.method === "GET" && url.pathname === "/api/announcements") {
       const { rows } = await pool.query(
         `SELECT id, repo, sha, author, message, changes, created_at
